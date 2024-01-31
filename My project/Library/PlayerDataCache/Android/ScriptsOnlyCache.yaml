@@ -1,6 +1,7 @@
 ScriptsOnlyBuild:
   usedScripts:
     Google.XR.Cardboard.dll:
+    - CardboardReticlePointer
     - Google.XR.Cardboard.XRLoader
     Unity.Rider.Editor.dll:
     - Packages.Rider.Editor.UnitTesting.CallbackData
@@ -14,6 +15,8 @@ ScriptsOnlyBuild:
     - UnityEditor.TestTools.TestRunner.Api.CallbacksHolder
     - UnityEditor.TestTools.TestRunner.TestListCacheData
     - UnityEditor.TestTools.TestRunner.TestRun.TestJobDataHolder
+    UnityEngine.SpatialTracking.dll:
+    - UnityEngine.SpatialTracking.TrackedPoseDriver
   serializedClasses: {}
   methodsToPreserve: []
   sceneClasses:
@@ -43,6 +46,14 @@ ScriptsOnlyBuild:
     - Class: 104
       Script: {instanceID: 0}
     - Class: 108
+      Script: {instanceID: 0}
+    - Class: 114
+      Script: {instanceID: 16610}
+    - Class: 114
+      Script: {instanceID: 20190}
+    - Class: 115
+      Script: {instanceID: 0}
+    - Class: 124
       Script: {instanceID: 0}
     - Class: 157
       Script: {instanceID: 0}
@@ -663,10 +674,28 @@ ScriptsOnlyBuild:
     className: TextMeshProUGUI
   - hash:
       serializedVersion: 2
+      Hash: 0f447e6c33135299c654d2578a99aec5
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: CardboardStartup
+  - hash:
+      serializedVersion: 2
+      Hash: 9d8b226ff13b11611652026cc4fbbf71
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: GraphicsAPITextController
+  - hash:
+      serializedVersion: 2
       Hash: da5a949a0bbd2ff91bc51c5805c2c41f
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
     className: UnityOnMouseUpAsButtonMessageListener
+  - hash:
+      serializedVersion: 2
+      Hash: 1406f9d843565b58be2594943dcac73d
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: ObjectController
   - hash:
       serializedVersion: 2
       Hash: 4f353524ce6564e40764f1ea080b2d85
@@ -885,6 +914,12 @@ ScriptsOnlyBuild:
     className: SignalEmitter
   - hash:
       serializedVersion: 2
+      Hash: 31be0f219e3460dcd412ffffd77c0257
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: VrModeController
+  - hash:
+      serializedVersion: 2
       Hash: 02a47340661d2ea7c6d30e292cfef403
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
@@ -934,4 +969,4 @@ ScriptsOnlyBuild:
   platform: 13
   scenePathNames:
   - Assets/Scenes/SampleScene.unity
-  playerPath: D:/Dentiva/My project/build.apk
+  playerPath: C:/Users/moham/Downloads/dent.apk
