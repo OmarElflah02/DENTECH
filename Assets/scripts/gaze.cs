@@ -6,6 +6,9 @@ public class GazeDetector : MonoBehaviour
     public float gazeDistance = 100f; // Distance within which to detect objects
     public LayerMask detectableLayers; // Only detect objects on these layers
     public List<Transform> objectsToAttach = new List<Transform>(); // List of objects to attach to the camera
+    public Transform deselectedObject = null; // Object that was previously gazed at
+    Vector3 lastObjectPosition;
+    Quaternion lastObjectRotation;
     public Vector3 attachmentOffset; // Offset from the camera's position
 
     private Transform currentObjectGazedAt = null; // Currently gazed object
@@ -16,13 +19,21 @@ public class GazeDetector : MonoBehaviour
         Vector3 fwd = transform.TransformDirection(Vector3.forward);
 
         bool hitDetected = Physics.Raycast(transform.position, fwd, out hit, gazeDistance, detectableLayers);
-        if (currentObjectGazedAt == null && hitDetected)
+        if(hitDetected && hit.transform == deselectedObject)
+        {
+            currentObjectGazedAt.position = lastObjectPosition;
+            currentObjectGazedAt.rotation = lastObjectRotation;
+            currentObjectGazedAt = null;
+        }
+        else if (currentObjectGazedAt == null && hitDetected)
         {
             Transform hitTransform = hit.transform;
             // Check if the hit object is one of the objects to attach
             if (objectsToAttach.Contains(hitTransform))
             {
                 Debug.Log("Hit objectToAttach");
+                lastObjectPosition = hitTransform.position;
+                lastObjectRotation = hitTransform.rotation;
                 currentObjectGazedAt = hitTransform;
                 AttachObjectToCamera(hitTransform);
             }
