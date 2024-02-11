@@ -19,7 +19,7 @@ public class GazeDetector : MonoBehaviour
         Vector3 fwd = transform.TransformDirection(Vector3.forward);
 
         bool hitDetected = Physics.Raycast(transform.position, fwd, out hit, gazeDistance, detectableLayers);
-        if(hitDetected && hit.transform == deselectedObject)
+        if(currentObjectGazedAt != null && hitDetected && hit.transform == deselectedObject)
         {
             currentObjectGazedAt.position = lastObjectPosition;
             currentObjectGazedAt.rotation = lastObjectRotation;
@@ -44,18 +44,12 @@ public class GazeDetector : MonoBehaviour
             // Optional: Implement logic to "detach" if needed
             AttachObjectToCamera(currentObjectGazedAt);
         }
-        // else if (currentObjectGazedAt != null)
-        // {
-        //     // If no object is hit and there was a previously attached object, detach it
-        //     // Optional: Implement logic to "detach" if needed
-        //     currentObjectGazedAt = null;
-        // }
     }
 
     void AttachObjectToCamera(Transform objectToAttach)
     {
         // Adjust the object's position and rotation to match the camera's, applying the specified offset
         objectToAttach.position = Camera.main.transform.position + Camera.main.transform.TransformDirection(attachmentOffset);
-        objectToAttach.rotation = Camera.main.transform.rotation;
+        // objectToAttach.rotation = Camera.main.transform.rotation;
     }
 }
