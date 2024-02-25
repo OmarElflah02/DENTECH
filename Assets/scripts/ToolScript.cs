@@ -4,10 +4,12 @@ using static CSG; // Ensure this matches the actual namespace and class of your 
 
 public class ToolInteraction : MonoBehaviour
 {
+    public GameObject tooth;
     private void OnTriggerStay(Collider other)
     {
         // Check if the collided object is tagged as "tooth"
-        if (other.gameObject.CompareTag("tooth"))
+        if (other.gameObject == tooth)
+        
         {
             PerformBooleanDifference(other.gameObject);
         }
