@@ -1,67 +1,58 @@
 using UnityEngine;
-using System.Collections.Generic; // This might be needed depending on how the rest of the CSG library is structured
-using static CSG; // Ensure this matches the actual namespace and class of your CSG library
+using System.Collections; // Required for IEnumerator
 
 public class ToolInteraction : MonoBehaviour
 {
-    public GameObject tooth;
+    private bool isProcessing = false; // Flag to control coroutine execution
+
     private void OnTriggerStay(Collider other)
     {
-        // Check if the collided object is tagged as "tooth"
-        if (other.gameObject == tooth)
-        
+        // Check if the collided object is tagged as "tooth" and ensure we're not already processing
+        if (other.gameObject.CompareTag("tooth"))
         {
             PerformBooleanDifference(other.gameObject);
         }
     }
 
-    private Mesh ModelToMesh(Model model)
-    {
-        Mesh mesh = new Mesh();
 
-        List<Vector3> vertices = new List<Vector3>();
-        List<int> triangles = new List<int>();
-        // Add code here to populate vertices and triangles from the model's data
 
-        mesh.vertices = vertices.ToArray();
-        mesh.triangles = triangles.ToArray();
-
-        mesh.RecalculateNormals(); // Recalculate normals for proper lighting
-        return mesh;
-    }
 
     private void PerformBooleanDifference(GameObject tooth)
     {
-        // Assuming 'Perform' is a static method in your CSG library that performs the boolean operation
-        // and 'this.gameObject' is correctly set up for the operation
+        // Your existing implementation
         Model resultModel = CSG.Perform(CSG.BooleanOp.Subtraction, tooth, this.gameObject);
-
-        if (resultModel != null)
+        if (resultModel != null && resultModel.mesh != null)
         {
-            // Convert the CSG Model result into a Unity Mesh
-            Mesh resultMesh = ModelToMesh(resultModel);
+            var composite = new GameObject();
+            composite.AddComponent<MeshFilter>().sharedMesh = resultModel.mesh;
+            resultModel.materials.Add(tooth.GetComponent<MeshRenderer>().sharedMaterial);
+            composite.AddComponent<MeshRenderer>().sharedMaterials = resultModel.materials.ToArray();
+            MeshCollider meshCollider = tooth.GetComponent<MeshCollider>();
+            MeshRenderer meshRenderer = tooth.GetComponent<MeshRenderer>();
+            meshCollider.sharedMesh = null; // Clear current mesh to ensure update
+            meshCollider.sharedMesh = resultModel.mesh; // Assign the new mesh for physics
+            meshRenderer.materials = resultModel.materials.ToArray();
 
-            // Apply the resulting mesh to the tooth
-            tooth.GetComponent<MeshFilter>().mesh = resultMesh;
-            UpdateMeshCollider(tooth, resultMesh);
+
         }
         else
         {
-            Debug.LogError("Boolean subtraction failed.");
+            Debug.LogError("Boolean subtraction failed or resulted in an invalid mesh.");
         }
+
     }
 
-    private void UpdateMeshCollider(GameObject tooth, Mesh newMesh)
-    {
-        MeshCollider meshCollider = tooth.GetComponent<MeshCollider>();
-        if (meshCollider != null)
-        {
-            meshCollider.sharedMesh = null; // Clear current mesh
-            meshCollider.sharedMesh = newMesh; // Assign the new mesh
-        }
-        else
-        {
-            Debug.LogError("MeshCollider component not found on the tooth object!");
-        }
-    }
+    // private void UpdateMeshCollider(GameObject tooth, Mesh newMesh)
+    // {
+    //     MeshCollider meshCollider = tooth.GetComponent<MeshCollider>();
+    //     if (meshCollider != null)
+    //     {
+    //         meshCollider.sharedMesh = null; // Clear current mesh to ensure update
+    //         meshCollider.sharedMesh = newMesh; // Assign the new mesh for physics
+    //     }
+    //     else
+    //     {
+    //         Debug.LogError("MeshCollider component not found on the tooth object!");
+    //     }
+    // }
 }
