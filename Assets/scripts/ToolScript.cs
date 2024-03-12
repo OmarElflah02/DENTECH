@@ -3,7 +3,6 @@ using System.Collections; // Required for IEnumerator
 
 public class ToolInteraction : MonoBehaviour
 {
-    private bool isProcessing = false; // Flag to control coroutine execution
 
     private void OnTriggerStay(Collider other)
     {
@@ -19,6 +18,7 @@ public class ToolInteraction : MonoBehaviour
 
     private void PerformBooleanDifference(GameObject tooth)
     {
+        Debug.Log("Performing boolean difference operation...");
         // Your existing implementation
         Model resultModel = CSG.Perform(CSG.BooleanOp.Subtraction, tooth, this.gameObject);
         if (resultModel != null && resultModel.mesh != null)
