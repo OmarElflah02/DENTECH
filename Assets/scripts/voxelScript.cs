@@ -7,13 +7,14 @@ public class voxelScript : MonoBehaviour
     public List<Vector3Int> GridPoints = new List<Vector3Int>();
     public float HalfSize = 0.1f; // Half the size of a voxel
     public Vector3 LocalOrigin;
+    public GameObject voxelPrefab; // Reference to your cube prefab
 
     public Vector3 PointToPosition(Vector3Int point)
     {
         return LocalOrigin + new Vector3(point.x, point.y, point.z) * (HalfSize * 2);
     }
 
-    public static void VoxelizeMesh(MeshFilter meshFilter)
+    public static void VoxelizeMesh(MeshFilter meshFilter, GameObject voxelPrefab)
     {
         if (!meshFilter.TryGetComponent(out MeshCollider meshCollider))
         {
@@ -44,20 +45,29 @@ public class voxelScript : MonoBehaviour
                 for (int y = 0; y < yMax; ++y)
                 {
                     Vector3 pos = voxelizedMesh.PointToPosition(new Vector3Int(x, y, z));
-                    if (Physics.CheckBox(pos, new Vector3(halfSize, halfSize, halfSize)))
+                    if (Physics.CheckBox(pos, new Vector3(halfSize, halfSize, halfSize), Quaternion.identity, LayerMask.GetMask("Default"), QueryTriggerInteraction.UseGlobal))
                     {
                         voxelizedMesh.GridPoints.Add(new Vector3Int(x, y, z));
+                        var voxel = GameObject.Instantiate(voxelPrefab, pos, Quaternion.identity);
+                        // Apply a random color to the voxel for visualization
+                        voxel.GetComponent<Renderer>().material.color = Random.ColorHSV();
                     }
                 }
             }
         }
     }
+
     void Start()
     {
         MeshFilter meshFilter = GetComponent<MeshFilter>();
-        if (meshFilter != null)
+        if (meshFilter != null && voxelPrefab != null)
         {
-            VoxelizeMesh(meshFilter);
+            Debug.Log("Voxelizing mesh...");
+            VoxelizeMesh(meshFilter, voxelPrefab);
+        }
+        else
+        {
+            Debug.LogError("MeshFilter or voxelPrefab not assigned!");
         }
     }
 }

@@ -1,20 +1,28 @@
 using UnityEngine;
 using System.Collections; // Required for IEnumerator
+using UnityEngine;
+using System.Collections;
 
 public class ToolInteraction : MonoBehaviour
 {
+    private bool isProcessing = false;
 
     private void OnTriggerStay(Collider other)
     {
-        // Check if the collided object is tagged as "tooth" and ensure we're not already processing
-        if (other.gameObject.CompareTag("tooth"))
+        if (other.gameObject.CompareTag("tooth") && !isProcessing)
         {
-            PerformBooleanDifference(other.gameObject);
+            StartCoroutine(PerformWithInterval(other.gameObject));
         }
     }
 
-
-
+    private IEnumerator PerformWithInterval(GameObject tooth)
+    {
+        isProcessing = true;
+        Debug.Log("Collided with " + tooth.name);
+        PerformBooleanDifference(tooth);
+        yield return new WaitForSeconds(2f); // Wait for 2 seconds
+        isProcessing = false;
+    }
 
     private void PerformBooleanDifference(GameObject tooth)
     {
@@ -23,16 +31,8 @@ public class ToolInteraction : MonoBehaviour
         Model resultModel = CSG.Perform(CSG.BooleanOp.Subtraction, tooth, this.gameObject);
         if (resultModel != null && resultModel.mesh != null)
         {
-            var composite = new GameObject();
-            composite.AddComponent<MeshFilter>().sharedMesh = resultModel.mesh;
-            resultModel.materials.Add(tooth.GetComponent<MeshRenderer>().sharedMaterial);
-            composite.AddComponent<MeshRenderer>().sharedMaterials = resultModel.materials.ToArray();
-            MeshCollider meshCollider = tooth.GetComponent<MeshCollider>();
-            MeshRenderer meshRenderer = tooth.GetComponent<MeshRenderer>();
-            meshCollider.sharedMesh = null; // Clear current mesh to ensure update
-            meshCollider.sharedMesh = resultModel.mesh; // Assign the new mesh for physics
-            meshRenderer.materials = resultModel.materials.ToArray();
-
+            // Update the mesh of the tooth object
+            UpdateMeshCollider(tooth, resultModel.mesh);
 
         }
         else
@@ -42,17 +42,17 @@ public class ToolInteraction : MonoBehaviour
 
     }
 
-    // private void UpdateMeshCollider(GameObject tooth, Mesh newMesh)
-    // {
-    //     MeshCollider meshCollider = tooth.GetComponent<MeshCollider>();
-    //     if (meshCollider != null)
-    //     {
-    //         meshCollider.sharedMesh = null; // Clear current mesh to ensure update
-    //         meshCollider.sharedMesh = newMesh; // Assign the new mesh for physics
-    //     }
-    //     else
-    //     {
-    //         Debug.LogError("MeshCollider component not found on the tooth object!");
-    //     }
-    // }
+    private void UpdateMeshCollider(GameObject tooth, Mesh newMesh)
+    {
+        MeshCollider meshCollider = tooth.GetComponent<MeshCollider>();
+        if (meshCollider != null)
+        {
+            meshCollider.sharedMesh = null; // Clear current mesh to ensure update
+            meshCollider.sharedMesh = newMesh; // Assign the new mesh for physics
+        }
+        else
+        {
+            Debug.LogError("MeshCollider component not found on the tooth object!");
+        }
+    }
 }
